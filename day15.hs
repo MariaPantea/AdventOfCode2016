@@ -1,18 +1,25 @@
 
 import Data.List
 
--- Disc #6 has 7 positions; at time=0, it is at position 0.
-
 parse :: [String] -> [Int]
-parse s =  drop pos $ cycle [0..(nPos-1)]
+parse s = drop pos $ cycle [0..(nPos-1)]
   where
-    --disc = read $ last $ s !! 1
-    nPos = read $ s !! 3 
-    pos  = read . init . last $ s
+    nPos = read (s !! 3) :: Int 
+    pos  = read $ init . last $ s :: Int
+
+getDiscs :: [[String]] -> [[Int]]
+getDiscs s = map parse s
 
 
+start :: [[Int]] -> [[Int]] -> Int -> Int -> Int
+start [] _ t1 t2 = t2
+start (w:ws) as t1 t2 = if w !! 1 == 0
+                    then start (map tail ws) as (t1+1) t2
+                    else start (map tail as) (map tail as) (t2+1) (t2+1)
 
 main :: IO ()
 main = do
-  file <- readFile "input10.txt"
-  print $ lines file
+  file <- readFile "input15.txt"
+  s <- return $ map words $ lines $ file 
+  discs <- return $ getDiscs s
+  print $ start discs discs 0 0
